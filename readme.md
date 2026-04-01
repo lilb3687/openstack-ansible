@@ -14,10 +14,8 @@
 配置openstack 集群
 1.修改hosts里面的配置参数IP地址,修改/etc/ansible/hosts文件参数
 2.更改roles下group_vars/all.yml里面的参数
-3.安装控制节点，修改install_openstack_controller.yml里面的roles，执行ansible-playbook -i ./hosts
-install_openstack_controller.yml
-4.安装计算节点，修改install_openstack_compute.yml里面的roles,执行ansible-playbook -i ./hosts
-install_openstack_compute.yml
+3.安装控制节点，修改install_openstack_controller.yml里面的roles，执行ansible-playbook -i ./hosts install_openstack_controller.yml
+4.安装计算节点，修改install_openstack_compute.yml里面的roles,执行ansible-playbook -i ./hosts install_openstack_compute.yml
 
 更改virt_type
 crudini -set /etc/nova/nova.conf libvirt virt_type qemu
