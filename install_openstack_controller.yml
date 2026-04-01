@@ -1,0 +1,26 @@
+---
+- hosts: controller
+  remote_user: root
+
+  roles:
+    - init
+    - mysql
+    - keystone
+    - glance
+    - nova-controller
+    - neutron-controller
+    - dashboard
+#      - cinder-controller
+#      - heat
+#       - swift-controller
+#       - zun-controller
+#       - ceilometer-controller
+#       - aodh
+#       - barbican
+  when: ansible_hostname == 'controller'
+
+- hosts: storage
+  remote_user: root
+
+  roles:
+    - cinder-controller

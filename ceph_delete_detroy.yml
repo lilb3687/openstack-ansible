@@ -1,0 +1,29 @@
+---
+    - name: delete ceph cluster
+      hosts: ceph-cluster
+      gather_facts: yes
+      become: yes
+
+      tasks:
+          - name: delete ceph soft packages
+            shell: cd /root/ceph-cluster/ && /usr/bin/ceph-deploy purge {{ ansible_hostname }}
+            ignore_errors: yes
+
+          - name: purge ceph data
+            shell: cd /root/ceph-cluster/ && /usr/bin/ceph-deploy purgedata {{ ansible_hostname }}
+            ignore_errors: yes
+
+          - name: purge ceph forgetkeys
+            shell: cd /root/ceph-cluster/ && /usr/bin/ceph-deploy forgetkeys
+            ignore_errors: yes
+
+          - name: wipefs osd
+            shell: /usr/sbin/wipefs -af {{ item }}
+            with_items:
+                - "/dev/sdb"
+                - "/dev/sdc"
+                - "/dev/sdd"
+                - "/dev/sde"
+
+          - name: reboot system
+            shell: /usr/sbin/shutdown -r now

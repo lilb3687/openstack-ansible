@@ -1,0 +1,14 @@
+---
+- hosts: ceph-mon
+  remote_user: root
+  become: yes
+  gather_facts: yes
+  roles:
+    - ceph
+
+- hosts: ceph-osds
+  remote_user: root
+  become: yes
+  gather_facts: yes
+  roles:
+    - ceph-osd

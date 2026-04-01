@@ -1,0 +1,14 @@
+---
+- hosts: compute
+  remote_user: root
+
+
+  roles:
+   - init
+   - nova-compute
+   - neutron-compute
+   - cinder-compute
+#    - swift-compute
+#    - zun-compute
+#    - ceilometer-compute
+  when: ansible_hostname == 'compute1' or ansible_hostname == 'compute2'

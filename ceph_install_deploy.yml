@@ -1,0 +1,88 @@
+- hosts: ceph-mon
+  become: yes
+  gather_facts: yes
+  vars:
+    mon_node: "{{ ansible_hostname }}"
+  tasks:
+    - name: Install ceph-deploy
+      yum:
+        name: ceph-deploy
+        state: present
+
+    - name: Install ceph-common
+      shell: ceph-deploy install --no-adjust-repos  {{ mon_node }}
+
+    - name: Create ceph-deploy directory structure
+      file:
+        path: "/root/ceph-cluster"
+        state: directory
+
+    - name: Configure ceph-deploy output
+      shell: cd /root/ceph-cluster/ && /usr/bin/ceph-deploy new {{ ansible_hostname }}
+      register: ceph_deploy_output
+
+    - name: create Ceph monitors
+      shell: cd /root/ceph-cluster/ && /usr/bin/ceph-deploy --overwrite-conf mon create-initial
+      ignore_errors: yes
+
+    - name: Start Ceph mgr
+      shell: cd /root/ceph-cluster/ && ceph-deploy mgr create {{ ansible_hostname }}
+      ignore_errors: yes
+
+    - name: Configure push config admin
+      shell: cd /root/ceph-cluster/ && ceph-deploy admin {{ ansible_hostname }}
+
+    - name: Configure Ceph auth_allow_insecure_global_id_reclaim
+      shell: /usr/bin/ceph config set mon auth_allow_insecure_global_id_reclaim false
+
+    - name: Start Ceph sods
+      shell: cd /root/ceph-cluster/ && ceph-deploy --overwrite-conf osd create --data {{ item }} {{ mon_node }}
+      with_items:
+        - /dev/sdb
+        - /dev/sdc
+        - /dev/sdd
+        - /dev/sde
+      ignore_errors: yes
+
+    - name: Wait for cluster to become healthy
+      shell: ceph -s
+      register: ceph_status
+      until: "{{ ceph_status.stdout.find('HEALTH_OK') != -1}}"
+      retries: 30
+      delay: 10
+
+    - name: Display Ceph status
+      debug:
+        var: ceph_status.stdout_lines
+
+
+- hosts: ceph-osds
+
+  become: yes
+  gather_facts: yes
+  vars:
+    osd_nodes: "{{ ansible_hostname }}"
+
+  tasks:
+    - name: Install ceph-common
+      shell: ceph-deploy install --no-adjust-repos  {{ osd_nodes }}
+
+    - name: Add Ceph sods
+      shell: cd /root/ceph-cluster/ && ceph-deploy --overwrite-conf osd create --data {{ item }} {{ osd_nodes }}
+      with_items:
+        - /dev/sdb
+        - /dev/sdc
+        - /dev/sdd
+        - /dev/sde
+      ignore_errors: yes
+
+    - name: Wait for cluster to become healthy
+      shell: ceph -s
+      register: ceph_status
+      until: "{{ ceph_status.stdout.find('HEALTH_OK') != -1}}"
+      retries: 30
+      delay: 10
+
+    - name: Display Ceph status
+      debug:
+        var: ceph_status.stdout_lines
