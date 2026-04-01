@@ -1,0 +1,4 @@
+- name: install neutron-compute
+  shell: iaas-install-neutron-compute.sh
+  tags:
+      - neutron-compute

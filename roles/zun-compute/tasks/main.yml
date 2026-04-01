@@ -1,0 +1,6 @@
+---
+# tasks file for roles/zun-compute
+- name: Install zun-compute package
+  shell: iaas-install-zun-compute.sh
+  tags:
+      - install-zun-compute

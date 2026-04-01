@@ -1,0 +1,14 @@
+[ceph_stable]
+baseurl = http://download.ceph.com/rpm-nautilus/el7/$basearch
+gpgcheck = 1
+gpgkey = https://download.ceph.com/keys/release.asc
+name = Ceph Stable $basearch repo
+priority = 2
+
+[ceph_stable_noarch]
+baseurl = http://download.ceph.com/rpm-nautilus/el7/noarch
+gpgcheck = 1
+gpgkey = https://download.ceph.com/keys/release.asc
+name = Ceph Stable noarch repo
+priority = 2
+

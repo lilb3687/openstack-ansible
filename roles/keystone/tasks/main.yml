@@ -1,0 +1,5 @@
+- name: install keystone
+  shell: iaas-install-keystone.sh
+  run_once: true
+  tags:
+      - install-keystone

@@ -1,0 +1,6 @@
+---
+# tasks file for roles/ceilometer-controller
+- name: install ceilometer-controller
+  shell: iaas-install-ceilometer-controller.sh
+  tags:
+      - install-ceilometer-controller

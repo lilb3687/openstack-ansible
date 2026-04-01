@@ -1,0 +1,5 @@
+- name: install heat template
+  shell: iaas-install-heat.sh
+  run_once: true
+  tags:
+      - install-heat

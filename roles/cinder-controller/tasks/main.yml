@@ -1,0 +1,4 @@
+- name: install cinder-controller
+  shell: iaas-install-cinder-controller.sh
+  tags:
+      - install-cinder-controller

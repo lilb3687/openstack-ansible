@@ -1,0 +1,6 @@
+---
+# tasks file for roles/barbican
+- name: install barbican package
+  shell: iaas-install-barbican.sh
+  tags:
+      - install-barbican

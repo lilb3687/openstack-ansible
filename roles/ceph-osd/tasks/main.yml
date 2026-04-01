@@ -1,0 +1,14 @@
+# tasks file for ceph-osd
+- name: Install Ceph-Common
+  shell: ceph-deploy install --no-adjust-repos  {{ ceph-osds }}
+
+- name: Add Ceph osds
+  shell: cd /root/ceph-cluster/ && ceph-deploy --overwrite-conf osd create --data {{ item }} {{ ceph-osds }}
+  with_items:
+  - /dev/sdb
+  - /dev/sdc
+  - /dev/sdd
+  - /dev/sde
+  run_once: true
+  ignore_errors: yes
+

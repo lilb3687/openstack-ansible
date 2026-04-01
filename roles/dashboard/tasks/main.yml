@@ -1,0 +1,32 @@
+- name: install dashboard
+  shell: iaas-install-dashboard.sh
+  run_once: true
+  tags:
+    - install-dashboard
+
+- name: copy logo.svg to /usr/share/openstack-dashboard/static/dashboard/img
+  copy:
+    src: logo.svg
+    dest: /usr/share/openstack-dashboard/static/dashboard/img/
+    backup: yes
+    force: yes
+  notify:
+    - restart httpd
+
+- name: copy logo-splash.svg to /usr/share/openstack-dashboard/static/dashboard/img
+  copy:
+    src: logo-splash.svg
+    dest: /usr/share/openstack-dashboard/static/dashboard/img/
+    backup: yes
+    force: yes
+  notify:
+    - restart httpd
+
+- name: copy favicon.ico to /usr/share/openstack-dashboard/static/dashboard/img
+  copy:
+    src: favicon.ico
+    dest: /usr/share/openstack-dashboard/static/dashboard/img/
+    backup: yes
+    force: yes
+  notify:
+    - restart httpd

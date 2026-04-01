@@ -1,0 +1,6 @@
+---
+# tasks file for roles/ceilometer-compute
+- name: Install ceilometer-compute
+  shell: iaas-install-ceilometer-compute.sh
+  tags:
+      - install-ceilometer-compute

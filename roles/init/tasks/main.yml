@@ -1,0 +1,20 @@
+- name: move repo
+  shell: mv /etc/yum.repos.d/* /tmp
+
+- name: create local.repo
+  copy: src=local.repo dest=/etc/yum.repos.d/
+
+- name: copy centos-release
+  copy: src=centos-release dest=/etc/centos-release backup=yes force=yes
+  when:
+      - ansible_distribution == "Anolis"
+      - ansible_distribution_major_version == "7"
+
+- name: 安装云计算初始化包 iaas-xiandian
+  yum: name=iaas-xiandian state=present
+
+- name: 复制openrc.sh到/etc/xiandian/openrc.sh
+  template: src=openrc.sh.j2 dest=/etc/xiandian/openrc.sh
+
+- name: 安装配置云计算初始化脚本 pre-host script
+  shell: iaas-pre-host.sh

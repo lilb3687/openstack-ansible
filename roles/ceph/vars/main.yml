@@ -1,0 +1,14 @@
+---
+# vars file for ceph
+mon_node: ceph1
+osd_pool_name:
+    - images
+    - volumes
+    - backups
+    - vms
+
+osd_pool_size: 64
+osd_pool_type: rbd
+cephfs_metadata_pool: cephfs_metadata
+cephfs_data_pool: cephfs_data
+cephfs_name: myfs

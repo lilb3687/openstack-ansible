@@ -1,0 +1,5 @@
+- name: install glance
+  shell: iaas-install-glance.sh
+  run_once: true
+  tags:
+      - install-glance

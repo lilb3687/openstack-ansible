@@ -1,0 +1,7 @@
+---
+# tasks file for roles/zun-controller
+- name: install zun-controller
+  shell: iaas-install-zun-controller.sh
+  run_once: true
+  tags:
+      - install-zun-controller

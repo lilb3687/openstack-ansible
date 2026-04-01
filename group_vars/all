@@ -1,0 +1,13 @@
+controller_ip: 192.168.3.140
+compute1_ip: 192.168.3.142
+compute2_ip: 192.168.3.143
+controller_name: controller
+compute1_name: compute1
+compute2_name: compute2
+PASSWD: 'China24sk041223'
+cinder_disk: sdb1
+swift_disk: sdb2
+network_segment_ip: 192.168.3.0
+external_name: ens34
+physical_name: provider
+storage_local_net_ip: 192.168.3.140

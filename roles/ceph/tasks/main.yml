@@ -1,0 +1,103 @@
+---
+# tasks file for ceph
+- name: Install ceph-deploy
+  yum:
+    name: ceph-deploy
+    state: present
+  run_once: true
+
+- name: Install ceph-common
+  shell: ceph-deploy install --no-adjust-repos  {{ mon_node }}
+  run_once: true
+
+- name: Create ceph-deploy directory structure
+  file:
+    path: "/root/ceph-cluster"
+    state: directory
+  run_once: true
+
+- name: Configure ceph-deploy output
+  shell: cd /root/ceph-cluster/ && /usr/bin/ceph-deploy new {{ mon_node }}
+  register: ceph_deploy_output
+  run_once: true
+
+- name: create Ceph monitors
+  shell: cd /root/ceph-cluster/ && /usr/bin/ceph-deploy --overwrite-conf mon create-initial
+  ignore_errors: yes
+  run_once: true
+
+- name: Start Ceph mgr
+  shell: cd /root/ceph-cluster/ && ceph-deploy mgr create {{ mon_node }}
+  ignore_errors: yes
+  run_once: true
+
+- name: Configure Ceph auth_allow_insecure_global_id_reclaim
+  shell: /usr/bin/ceph config set mon auth_allow_insecure_global_id_reclaim false
+  run_once: true
+
+- name: add mon to ceph.conf
+  lineinfile:
+      dest: /root/ceph-cluster/ceph.conf
+      insertafter: "{{ item.InsertAfter }}"
+      line: "{{ item.line }}"
+  loop:
+      - {InsertAfter: '^auth_client_required', line: '[mon]'}
+      - {InsertAfter: '\[mon\]', line: 'mon_allow_pool_delete = true'}
+      - {InsertAfter: '^mon_allow_pool_delete', line: 'mon_clock_drift_allowed = 1\.0'}
+
+- name: Start Ceph osds
+  shell: cd /root/ceph-cluster/ && ceph-deploy osd create --data {{ item }} {{ mon_node }}
+  with_items:
+      - /dev/sdb
+      - /dev/sdc
+      - /dev/sdd
+      - /dev/sde
+  run_once: true
+  ignore_errors: yes
+
+
+- name: Configure admin mgr
+  shell: cd /root/ceph-cluster/ && ceph-deploy --overwrite-conf admin {{ mon_node }}
+  run_once: true
+
+- name: Wait for cluster to become healthy
+  shell: ceph -s
+  register: ceph_status
+  until: "{{ ceph_status.stdout.find('HEALTH_OK') != -1}}"
+  retries: 30
+  delay: 10
+
+- name: Display Ceph status
+  debug:
+      var: ceph_status.stdout_lines
+
+- name: create ceph osd pool 
+  shell: ceph osd pool create {{ osd_pool_name }} {{ osd_pool_size }} {{ osd_pool_size }}
+  run_once: true
+  ignore_errors: yes
+
+- name: create ceph osd pool application
+  shell: ceph osd pool application enable {{ osd_pool_name }} rbd
+  run_once: true
+  ignore_errors: yes
+
+
+- name: Create mds on mon node
+  shell: ceph-deploy mds create {{ mon_node }}
+  run_once: true
+  ignore_errors: yes
+  
+- name: create cephfs metadata pool
+  shell: ceph osd pool create {{ cephfs_metadata_pool }} 128
+  run_once: true
+  ignore_errors: yes
+
+- name: create cephfs data pool
+  shell: ceph osd pool create {{ cephfs_data_pool }} 128
+  run_once: true
+  ignore_errors: yes
+
+- name: create cephfs filesystem
+  shell: ceph fs new {{ cephfs_name }} {{ cephfs_metadata_pool }} {{ cephfs_data_pool }}
+  run_once: true
+  ignore_errors: yes

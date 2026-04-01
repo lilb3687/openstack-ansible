@@ -1,0 +1,5 @@
+- name: install nova controller
+  shell: iaas-install-nova-controller.sh
+  run_once: true
+  tags:
+      - install-nova-controller

@@ -1,0 +1,6 @@
+---
+# tasks file for roles/aodh
+- name: Install aodh packages
+  shell: iaas-install-aodh.sh
+  tags:
+      - install-aodh
